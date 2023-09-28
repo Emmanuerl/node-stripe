@@ -35,4 +35,4 @@ jobs:
         env:
           PORT: 9050
           STRIPE_SECRET_KEY: stripe-secret
-          DATABASE_URL: mysql://root:dbpassword@localhost:3306/node_stripe
+          DATABASE_URL: mysql://root:dbpassword@127.0.0.1:3306/node_stripe
