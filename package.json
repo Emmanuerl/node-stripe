@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "pretest": " npm run knex migrate:up",
     "test": "mocha --config=.mocharc.js",
     "knex": "knex --migrations-directory=db/migrations"
   },
