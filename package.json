@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "nodemon src/index.js",
     "start": "node src/index.js",
+    "pretest": " npm run knex migrate:up",
     "test": "mocha --config=.mocharc.js",
     "knex": "knex --migrations-directory=db/migrations"
   },
@@ -21,8 +22,11 @@
     "stripe": "^13.7.0"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.1.0",
     "chai": "^4.3.10",
     "mocha": "^10.2.0",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "sinon": "^16.0.0",
+    "supertest": "^6.3.3"
   }
 }

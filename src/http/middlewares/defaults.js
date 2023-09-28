@@ -34,18 +34,6 @@ function notFound(req, res, next) {
 }
 
 /**
- * Middleware for automatically responding to all requests
- * @param {Error} err
- * @param {express.Request} req
- * @param {express.Response} res
- * @param {express.NextFunction} next
- * @returns
- */
-exports.hello = function (req, res, next) {
-  return next(new ApplicationError(404, "Hello World!"));
-};
-
-/**
  * Bind default handlers to http requests
  * @param {import("../../index").Container} container
  */

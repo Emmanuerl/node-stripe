@@ -20,3 +20,27 @@ export interface Container {
    */
   db: Knex;
 }
+
+/**
+ * Base model DB entities should extend
+ */
+export interface Model {
+  /**
+   * primary key
+   */
+  id: string;
+  /**
+   * date of creation
+   */
+  created_at: Date;
+}
+
+/**
+ * A customer on the platform
+ */
+export interface Customer extends Model {
+  /**
+   * Stripe customer ID of the user, most likely created when user signs up
+   */
+  stripe_id: string;
+}
