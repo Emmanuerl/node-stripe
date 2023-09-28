@@ -3,7 +3,11 @@ const env = require("./env");
 
 let db;
 
-async function connectMysql() {
+/**
+ * Establishes a singleton connection to mysql
+ * @returns {Promise<knex.Knex>} db connection
+ */
+async function getDbConnection() {
   if (db) return db;
 
   db = knex({
@@ -17,4 +21,4 @@ async function connectMysql() {
   return db;
 }
 
-exports.connectMysql = connectMysql;
+exports.getDbConnection = getDbConnection;

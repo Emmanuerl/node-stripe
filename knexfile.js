@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const base = {
-  client: "mysql",
+  client: "mysql2",
   connection: process.env.DATABASE_URL,
   migrations: {
     tableName: "knex_migrations",

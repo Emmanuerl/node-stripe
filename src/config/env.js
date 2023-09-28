@@ -11,7 +11,7 @@ const schema = {
 
 /**
  * Loads the required environment variables into a map for easy access across the app.
- * @returns the map of env values wtth key converted to it's lower case form
+ * @returns {Record<keyof schema, string | number>} the map of env values wtth key converted to it's lower case form
  */
 function loadEnv() {
   const lowerisedEnv = Object.keys(process.env).reduce((obj, key) => {
