@@ -6,8 +6,8 @@ require("dotenv").config();
 const schema = {
   port: joi.number().required(),
   stripe_secret_key: joi.string().required(),
-  database_url: joi.string().uri()
-}
+  database_url: joi.string().uri(),
+};
 
 /**
  * Loads the required environment variables into a map for easy access across the app.
@@ -23,7 +23,7 @@ function loadEnv() {
     return validate(lowerisedEnv, schema);
   } catch (err) {
     if (err instanceof DataValidationError) {
-      throw new Error(JSON.stringify(err.messages, null, 2))
+      throw new Error(JSON.stringify(err.messages, null, 2));
     }
     throw err;
   }
