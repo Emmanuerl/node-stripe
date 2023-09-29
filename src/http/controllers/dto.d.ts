@@ -17,3 +17,19 @@ export interface InitiateCheckoutDTO {
    */
   customer_id: string;
 }
+
+export interface StripeWebhook {
+  id: string;
+  object: "subscription" | "invoice";
+  data: { customer: string; id: string };
+  type: StripeEventType;
+  [key: string]: any;
+}
+
+type StripeEventType =
+  | "customer.subscription.created"
+  | "customer.subscription.updated"
+  | "customer.subscription.deleted"
+  | "invoice.paid"
+  | "invoice.payment_failed"
+  | "invoice.finalization_failed";

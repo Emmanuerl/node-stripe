@@ -4,7 +4,9 @@ const express = require("express");
 const http = require("node:http");
 const stripe = require("stripe").default(env.stripe_secret_key);
 const checkoutsController = require("./http/controllers/checkout.controller");
+const stripeController = require("./http/controllers/stripe-webhook.controller");
 const defaultHanders = require("./http/middlewares/defaults");
+const httpHandlers = require("./http/middlewares/http");
 const { getDbConnection } = require("./config/mysql");
 
 async function start() {
@@ -16,9 +18,12 @@ async function start() {
   container.app = app;
   console.log("dependency container has been successfully setup");
 
+  app.use(httpHandlers.parseBody);
+  app.use(express.urlencoded({ extended: true }));
+
   // load routes
-  app.use(express.json());
   checkoutsController.setup(container);
+  stripeController.setup(container);
   defaultHanders.setup(container);
 
   const server = http.createServer(container.app);
@@ -26,7 +31,5 @@ async function start() {
     console.log(`server listening on port ${env.port}`)
   );
 }
-
-function loadRoutes(container) {}
 
 start();
