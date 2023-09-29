@@ -4,6 +4,7 @@ const express = require("express");
 const http = require("node:http");
 const stripe = require("stripe").default(env.stripe_secret_key);
 const checkoutsController = require("./http/controllers/checkout.controller");
+const stripeController = require("./http/controllers/stripe-webhook.controller");
 const defaultHanders = require("./http/middlewares/defaults");
 const httpHandlers = require("./http/middlewares/http");
 const { getDbConnection } = require("./config/mysql");
@@ -22,6 +23,7 @@ async function start() {
 
   // load routes
   checkoutsController.setup(container);
+  stripeController.setup(container);
   defaultHanders.setup(container);
 
   const server = http.createServer(container.app);
