@@ -7,6 +7,7 @@ const schema = {
   port: joi.number().required(),
   stripe_secret_key: joi.string().required(),
   database_url: joi.string().uri(),
+  stripe_signing_secret: joi.string().required(),
 };
 
 /**
