@@ -1,5 +1,6 @@
+require("dotenv").config();
+
 const sinon = require("sinon");
-const env = require("../../src/config/env");
 const { Stripe } = require("stripe");
 const { faker } = require("@faker-js/faker");
 
@@ -50,10 +51,13 @@ function newInvoice() {
  */
 function mockCreateInvoice(stripe, input) {
   const invoice = newInvoice();
-
   const create = sinon
     .stub(stripe.invoices, "create")
-    .withArgs()
+    .withArgs({
+      customer: input.customer,
+      collection_method: "send_invoice",
+      days_until_due: 1,
+    })
     .resolves(invoice);
 
   const appendItems = sinon
@@ -73,6 +77,49 @@ function mockCreateInvoice(stripe, input) {
     .resolves(invoice);
 
   return { create, appendItems, finalise };
+}
+
+function mockCreateSubscriptionFailure(stripe, input) {
+  return sinon
+    .stub(stripe.subscriptions, "create")
+    .withArgs({
+      customer: input.customer,
+      items: [
+        {
+          price: input.price,
+        },
+      ],
+      payment_behavior: "default_incomplete",
+      payment_settings: { save_default_payment_method: "on_subscription" },
+      expand: ["latest_invoice.payment_intent"],
+    })
+    .rejects(
+      new Stripe.errors.StripeInvalidRequestError(
+        new Stripe.errors.StripeError({ message: "invalid customer id" })
+      )
+    );
+}
+
+function mockCreateInvoiceFailure(stripe, input) {
+  return sinon
+    .stub(stripe.invoices, "create")
+    .withArgs({
+      customer: input.customer,
+      collection_method: "send_invoice",
+      days_until_due: 1,
+    })
+    .rejects(
+      new Stripe.errors.StripeInvalidRequestError(
+        new Stripe.errors.StripeError({ message: "invalid customer id" })
+      )
+    );
+}
+
+function mockCreateCustomer(stripe, input, output) {
+  return sinon
+    .stub(stripe.customers, "create")
+    .withArgs(input)
+    .resolves(output);
 }
 
 /**
@@ -108,7 +155,7 @@ function mockCreateSubscription(stripe, input) {
 function signRequest(stripe, payload) {
   return stripe.webhooks.generateTestHeaderString({
     payload,
-    secret: env.stripe_signing_secret,
+    secret: process.env.STRIPE_SIGNING_SECRET,
   });
 }
 
@@ -141,4 +188,7 @@ module.exports = {
   mockCreateSubscription,
   signRequest,
   newWebhook,
+  mockCreateSubscriptionFailure,
+  mockCreateInvoiceFailure,
+  mockCreateCustomer,
 };

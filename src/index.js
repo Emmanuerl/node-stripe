@@ -2,31 +2,39 @@ const env = require("./config/env");
 
 const express = require("express");
 const http = require("node:http");
-const stripe = require("stripe").default(env.stripe_secret_key);
-const checkoutsController = require("./http/controllers/checkout.controller");
-const stripeController = require("./http/controllers/stripe-webhook.controller");
-const defaultHanders = require("./http/middlewares/defaults");
-const httpHandlers = require("./http/middlewares/http");
 const { getDbConnection } = require("./config/mysql");
+const { stripeHooks } = require("ss-component-payments");
+const { errorHandler } = require("./middlewares/defaults");
 
 async function start() {
-  /** @type { import("./index").Container }  */
-  const container = {};
   const app = express();
-  container.db = await getDbConnection();
-  container.stripe = stripe;
-  container.app = app;
-  console.log("dependency container has been successfully setup");
+  const db = await getDbConnection();
 
-  app.use(httpHandlers.parseBody);
-  app.use(express.urlencoded({ extended: true }));
+  // commented key:values pairs indicate the available options and their defailt values
 
-  // load routes
-  checkoutsController.setup(container);
-  stripeController.setup(container);
-  defaultHanders.setup(container);
+  const middleware = stripeHooks({
+    db: {
+      connection: db,
+      // tableName: "users",
+      // tableColumn: "stripe_id",
+      // tableKey: "id",
+      emailColumn: "email_address",
+    },
+    stripe: {
+      signingSecret: env.stripe_signing_secret,
+      secretKey: env.stripe_secret_key,
+    },
+    routes: {
+      initiate: "/api/payments",
+      webhook: "/api/hooks/stripe",
+    },
+  });
 
-  const server = http.createServer(container.app);
+  app.use(middleware);
+
+  app.use(errorHandler);
+
+  const server = http.createServer(app);
   server.listen(env.port, () =>
     console.log(`server listening on port ${env.port}`)
   );
